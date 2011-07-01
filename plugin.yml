@@ -1,0 +1,25 @@
+name: NPC
+
+main: meta1203.NPC.NPC
+
+version: 0.1
+
+commands:
+  /spawn:
+    description: Creates a new basic NPC
+    usage: /<command> <npcname> [guard]
+  /clone:
+    description: Clones your player
+    usage: /<command> <#oftimes>
+  clearnpcs:
+    description: Removes all NPC's
+    usage: /<command>
+  /follow:
+    description: Creates a following NPC
+    usage: /<command> <npcname>
+  delnpc:
+    description: Removes a certain NPC
+    usage: /<command> <npcname>
+  givenpc:
+    description: Gives a NPC items
+    usage: /<command> <npcname> <item#> [itemquantity]
