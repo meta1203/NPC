@@ -12,7 +12,7 @@ public class Follower extends Thread {
 	public void run() {
 		while (true) {
 			for (Map.Entry<BasicHumanNpc, Player> entry : followMap.entrySet()) {
-				entry.getKey().pathFindTo(entry.getValue().getLocation(), 10);
+				// entry.getKey().pathFindTo(entry.getValue().getLocation(), 10);
 			}
 			try {
 				synchronized (this) {

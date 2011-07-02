@@ -1,8 +1,12 @@
 package meta1203.NPC;
 
-import java.io.File;
+import java.io.*;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.logging.*;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,6 +21,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
+
+import com.aranai.virtualchest.VirtualChest;
+
 import redecouverte.npcspawner.*;
 /**
  * NPC for Bukkit
@@ -27,14 +34,16 @@ public class NPC extends JavaPlugin {
     private final NPCPlayerListener playerListener = new NPCPlayerListener(this);
     private final NPCEntityListener entityListener = new NPCEntityListener(this);
     private final NPCBlockListener blockListener = new NPCBlockListener(this);
+    public final NpcSpawner npcs = new NpcSpawner();
     public final BasicHumanNpcList HumanNPCList = new BasicHumanNpcList();
-    public final NpcSpawner npcs = new NpcSpawner(this);
-    Follower followThread = new Follower();
-    Attacker attacker = new Attacker();
+    public final Logger logger = Logger.getLogger("Minecraft");
+    //Follower followThread = new Follower();
+    public NpcInventories npci = new NpcInventories();
+    Attacker attacker = new Attacker(this);
 
     public NPC() {
         // TODO: Place any custom initialisation code hered
-    	followThread.start();
+    	//followThread.start();
     	attacker.start();
         // NOTE: Event registration should be done in onEnable not here as all events are unregistered when a plugin is disabled
     }
@@ -53,32 +62,30 @@ public class NPC extends JavaPlugin {
 			return true;
     	}
     	
-    	if (arg1.getName().equalsIgnoreCase("/follow") && args.length >= 1) {
+    	/* if (arg1.getName().equalsIgnoreCase("/follow") && args.length >= 1) {
     		BasicHumanNpc spawned = npcm.spawnNPC(args[0], ((Player)sender).getLocation());
 			followThread.followMap.put(spawned, player);
 			sender.sendMessage("NPC created and following you.");
 			return true;
-    	}
+    	} */
     	
     	if (arg1.getName().equalsIgnoreCase("clearnpcs")) {
-    		for (NPCEntity current : npcm.getNPCs()) {
-    			String id = current.displayName;
-    	    	
-    			npcm.despawn(id);
-    			sender.sendMessage("All NPC's cleared");
-    			return true;
+    		for (BasicHumanNpc current : HumanNPCList.values()) {
+    			NpcSpawner.RemoveBasicHumanNpc(current);
     		}
+    		sender.sendMessage("All NPC's cleared");
+    		return true;
     	}
     	
     	if (arg1.getName().equalsIgnoreCase("delnpc")) {
     		if (args.length == 1) {
-    			npcm.despawn(args[0]);
+    			NpcSpawner.RemoveBasicHumanNpc(HumanNPCList.get(args[0]));
     			sender.sendMessage("NPC deleted");
     			return true;
     		}
     	}
     	
-    	if (arg1.getName().equalsIgnoreCase("givenpc")) {
+    	/* if (arg1.getName().equalsIgnoreCase("givenpc")) {
     		if (args.length == 2) {
     			((HumanEntity)npcm.getNPC(args[0]).getBukkitEntity()).getInventory().addItem(new ItemStack(Integer.parseInt(args[1])));
     			sender.sendMessage("NPC given selected item");
@@ -89,12 +96,12 @@ public class NPC extends JavaPlugin {
     			sender.sendMessage("NPC given selected item");
     			return true;
     		}
-    	}
+    	} */
     	
     	if (arg1.getName().equalsIgnoreCase("/clone") && args.length == 1) {
     		for(int x = 0; x < Integer.parseInt(args[0]); x++) {
     				Location loc = locWithinArea(((Player)sender).getLocation(), Integer.parseInt(args[0])/2);
-    				npcm.spawnNPC(((Player)sender).getName(), loc);
+    				SpawnNPC(((Player)sender).getName(), ((Player)sender).getName(), loc);
     			}
     		
 			sender.sendMessage("Cloned " + args[0] + " times.");
@@ -102,7 +109,7 @@ public class NPC extends JavaPlugin {
     	}
     	}
 		catch (NumberFormatException e) {
-			   sender.sendMessage("Argument needs to be a number!");
+			   sender.sendMessage("One of the arguments needs to be a number!");
 			   return false;
 		}
     	return false;
@@ -114,9 +121,9 @@ public class NPC extends JavaPlugin {
         // Register our events
         PluginManager pm = getServer().getPluginManager();
        
-        npcm = new NPCManager(this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Highest, this);
-        pm.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Highest, this);
+        pm.registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Highest, this);
+        pm.registerEvent(Event.Type.ENTITY_TARGET, entityListener, Priority.Highest, this);
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
@@ -152,22 +159,25 @@ public class NPC extends JavaPlugin {
     }
     public void onDisable() {
         // TODO: Place any custom disable code here
-
+    	
+    	for (BasicHumanNpc current : HumanNPCList.values()) {
+			NpcSpawner.RemoveBasicHumanNpc(current);
+		}
         // NOTE: All registered events are automatically unregistered when a plugin is disabled
 
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
         System.out.println("NPC has been disabled.");
     }
     
-    public void removeSpecial(NPCEntity current) {
+    public void removeSpecial(BasicHumanNpc current) {
     	
     	if (attacker.guardList.contains(current)) {
     		attacker.guardList.remove(current);
     	}
     	
-    	if (followThread.followMap.containsKey(current)) {
+    	/* if (followThread.followMap.containsKey(current)) {
     		followThread.followMap.remove(current);
-    	}
+    	} */
     }
     
     public BasicHumanNpc SpawnNPC(String id, String name, Location l) {
@@ -179,7 +189,17 @@ public class NPC extends JavaPlugin {
     	
     	BasicHumanNpc hnpc = NpcSpawner.SpawnBasicHumanNpc(id, name, l.getWorld(), l.getX(), l.getY(), l.getZ(), l.getYaw(), l.getPitch());
         this.HumanNPCList.put(id, hnpc);
+        VirtualChest vc = new VirtualChest(id);
+        npci.put(hnpc, vc);
         return hnpc;
     }
+    
+    public void respawnAllNpcs(BasicHumanNpcList hnpcl) {
+    	for (Map.Entry<String,BasicHumanNpc> current : hnpcl.entrySet()) {
+    		npcs.respawnNpc(current.getValue().getCHumanNpc(), current.getKey(), current.getValue().getName());
+    		
+    	}
+    }
+    
 }
 

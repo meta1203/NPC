@@ -20,9 +20,9 @@ public class NPCPlayerListener extends PlayerListener {
     }
 
     //Insert Player related code here
-    public void onPlayerQuit(PlayerQuitEvent event) {
-    	if (plugin.followThread.followMap.containsValue(event.getPlayer())) {
+    /* public void onPlayerQuit(PlayerQuitEvent event) {
+    	 if (plugin.followThread.followMap.containsValue(event.getPlayer())) {
     		plugin.followThread.followMap.remove(event.getPlayer());
-    	}
-    }
+    	} 
+    } */
 }

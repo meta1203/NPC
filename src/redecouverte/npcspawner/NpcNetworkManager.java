@@ -39,4 +39,8 @@ public class NpcNetworkManager extends NetworkManager {
     @Override
     public void a() {
     }
+    
+    public String g() {
+    	return "";
+    }
 }

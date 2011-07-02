@@ -1,17 +1,21 @@
 package redecouverte.npcspawner;
 
-import java.lang.reflect.Field;
 import java.util.logging.Logger;
 import net.minecraft.server.EntityLiving;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 
 public class BasicHumanNpc extends BasicNpc {
 
     private CHumanNpc mcEntity;
+    public int health = 20;
     private static final Logger logger = Logger.getLogger("Minecraft");
 
+    public CHumanNpc getCHumanNpc() {
+    	return mcEntity;
+    }
     public BasicHumanNpc(CHumanNpc entity, String uniqueId, String name) {
         super(uniqueId, name);
 
@@ -33,10 +37,7 @@ public class BasicHumanNpc extends BasicNpc {
     public void attackLivingEntity(LivingEntity ent) {
         try {
             this.mcEntity.animateArmSwing();
-            Field f = CraftLivingEntity.class.getDeclaredField("entity");
-            f.setAccessible(true);
-            EntityLiving lEntity = (EntityLiving) f.get(ent);
-            this.mcEntity.damageEntity(lEntity,2);
+            this.mcEntity.damageEntity((((CraftEntity)ent).getHandle()),2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,6 +47,8 @@ public class BasicHumanNpc extends BasicNpc {
     {
         this.mcEntity.animateArmSwing();
     }
-
-
+    
+    public void animateHurt() {
+    	this.mcEntity.animateHurt();
+    }
 }

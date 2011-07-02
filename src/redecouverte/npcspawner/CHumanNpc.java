@@ -34,6 +34,9 @@ public class CHumanNpc extends EntityPlayer {
     public void animateArmSwing() {
     	((WorldServer)this.world).tracker.a(this, new Packet18ArmAnimation(this, 1));
     }
+    public void animateHurt() {
+    	((WorldServer)this.world).tracker.a(this, new Packet18ArmAnimation(this, 2));
+    }
 
     @Override
     public boolean a(EntityHuman entity) {
@@ -58,7 +61,7 @@ public class CHumanNpc extends EntityPlayer {
     }
 
     @Override
-    public void c(Entity entity) {
+    public void collide(Entity entity) {
         if (lastBounceId != entity.id || System.currentTimeMillis() - lastBounceTick > 1000) {
             EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(), entity.getBukkitEntity(), NpcEntityTargetEvent.NpcTargetReason.NPC_BOUNCED);
             CraftServer server = ((WorldServer) this.world).getServer();
@@ -68,7 +71,6 @@ public class CHumanNpc extends EntityPlayer {
         }
 
         lastBounceId = entity.id;
-
         super.c(entity);
     }
 }

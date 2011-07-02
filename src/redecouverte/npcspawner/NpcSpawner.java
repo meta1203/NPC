@@ -30,6 +30,24 @@ public class NpcSpawner {
 
         return null;
     }
+    
+    public BasicHumanNpc respawnNpc(CHumanNpc eh, String uniqueId, String name) {
+        try {
+            WorldServer ws = GetWorldServer(eh.getBukkitEntity().getWorld());
+            MinecraftServer ms = GetMinecraftServer(ws.getServer());
+
+            ws.addEntity(eh); //the right way
+            ws.entityList.add(eh);
+
+            return new BasicHumanNpc(eh, uniqueId, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    
+    
     private static MinecraftServer GetMinecraftServer(Server server) {
 
         if (server instanceof CraftServer) {
@@ -90,7 +108,6 @@ public class NpcSpawner {
     public static LivingEntity SpawnMob(CreatureType type, World world, double x, double y, double z) {
         try {
             WorldServer ws = GetWorldServer(world);
-
             Entity eh = EntityTypes.a(type.getName(), ws);
             eh.setLocation(x, y, z, 0, 0);
             ws.addEntity(eh); 
@@ -104,4 +121,5 @@ public class NpcSpawner {
         return null;
     }
 
+    
 }
