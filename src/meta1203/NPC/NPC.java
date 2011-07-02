@@ -35,7 +35,8 @@ public class NPC extends JavaPlugin {
     private final NPCEntityListener entityListener = new NPCEntityListener(this);
     private final NPCBlockListener blockListener = new NPCBlockListener(this);
     public final NpcSpawner npcs = new NpcSpawner();
-    public final BasicHumanNpcList HumanNPCList = new BasicHumanNpcList();
+    public final FileManager fm = new FileManager(this);
+    public BasicHumanNpcList HumanNPCList = new BasicHumanNpcList();
     public final Logger logger = Logger.getLogger("Minecraft");
     //Follower followThread = new Follower();
     public NpcInventories npci = new NpcInventories();
@@ -118,6 +119,19 @@ public class NPC extends JavaPlugin {
     public void onEnable() {
         // TODO: Place any custom enable code here including the registration of any events
 
+    	for (int i = 0; i < 4 && !fm.doesPFolderExist(); i++) {
+    		System.out.println(i + " : " + fm.doesPFolderExist());
+    	}
+    	
+    	if (fm.filesInDataFolder() != null) {
+    		BasicHumanNpcList temp = (BasicHumanNpcList)fm.readFromFile("plugins/NPC/data/npcData.dat");
+    		if (temp != null) {
+    			HumanNPCList = temp;
+    			respawnAllNpcs(HumanNPCList);
+    		}
+    		
+    	}
+    	
         // Register our events
         PluginManager pm = getServer().getPluginManager();
        
@@ -159,7 +173,7 @@ public class NPC extends JavaPlugin {
     }
     public void onDisable() {
         // TODO: Place any custom disable code here
-    	
+    	fm.writeToFile(HumanNPCList, "plugins/NPC/data/npcData.dat");
     	for (BasicHumanNpc current : HumanNPCList.values()) {
 			NpcSpawner.RemoveBasicHumanNpc(current);
 		}
@@ -196,8 +210,9 @@ public class NPC extends JavaPlugin {
     
     public void respawnAllNpcs(BasicHumanNpcList hnpcl) {
     	for (Map.Entry<String,BasicHumanNpc> current : hnpcl.entrySet()) {
-    		npcs.respawnNpc(current.getValue().getCHumanNpc(), current.getKey(), current.getValue().getName());
-    		
+    		BasicHumanNpc hnpc = npcs.respawnNpc(current.getValue().getCHumanNpc(), current.getKey(), current.getValue().getName());
+    		VirtualChest vc = new VirtualChest(current.getKey());
+            npci.put(hnpc, vc);
     	}
     }
     

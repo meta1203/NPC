@@ -10,9 +10,9 @@ public class FileManager {
 	public void writeToFile(Object o, String fileS) {
     	try{
     	      //use buffering
-    	      OutputStream file = new FileOutputStream( fileS );
-    	      OutputStream buffer = new BufferedOutputStream( file );
-    	      ObjectOutput output = new ObjectOutputStream( buffer );
+    	      FileOutputStream file = new FileOutputStream( fileS );
+    	      BufferedOutputStream buffer = new BufferedOutputStream( file );
+    	      ObjectOutputStream output = new ObjectOutputStream( buffer );
     	      try{
     	        output.writeObject(o);
     	      }
@@ -24,18 +24,15 @@ public class FileManager {
     			plugin.logger.log(Level.SEVERE, "Cannot perform output.", ex);
     	    }
     }
-	public List<File> filesInDataFolder() {
-		List<File> returnish = new ArrayList<File>();
+	
+	public File filesInDataFolder() {
 		File npcData = new File("plugins/NPC/data/npcData.dat");
 		if (npcData.exists()) {
-			returnish.add(npcData);
+			return npcData;
 		}
-		File invData = new File("plugins/NPC/data/invData.dat");
-		if (npcData.exists()) {
-			returnish.add(invData);
-		}
-		return returnish;
+		return null;
 	}
+	
 	public boolean doesPFolderExist() {
 		try {
 			File mainfolder = new File("plugins/NPC");
@@ -68,9 +65,9 @@ public class FileManager {
     public Object readFromFile(String fileS) {
     	try{
     	      //use buffering
-    	      InputStream file = new FileInputStream(fileS);
-    	      InputStream buffer = new BufferedInputStream( file );
-    	      ObjectInput input = new ObjectInputStream ( buffer );
+    	      FileInputStream file = new FileInputStream(fileS);
+    	      BufferedInputStream buffer = new BufferedInputStream( file );
+    	      ObjectInputStream input = new ObjectInputStream ( buffer );
     	      Object returnish;
     	      try{
     	        returnish = input.readObject();

@@ -1,7 +1,9 @@
 package redecouverte.npcspawner;
 
+import java.io.Serializable;
 
-public class BasicNpc {
+
+public class BasicNpc implements Serializable{
 
     private String uniqueId;
     private String name;
