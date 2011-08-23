@@ -14,6 +14,7 @@
     along with GiftPost.  If not, see <http://www.gnu.org/licenses/>.*/
 package com.aranai.virtualchest;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import net.minecraft.server.EntityPlayer;
@@ -30,7 +31,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
  * @authors Timberjaw and Balor
  * 
  */
-public class VirtualChest implements Cloneable {
+public class VirtualChest implements Serializable, Cloneable {
 
 	protected TileEntityVirtualChest chest;
 
@@ -42,6 +43,10 @@ public class VirtualChest implements Cloneable {
 	public VirtualChest(String chestName) {
 		chest = new TileEntityVirtualChest();
 		chest.setName(chestName);
+	}
+	
+	public VirtualChest() {
+		
 	}
 
 	public VirtualChest(VirtualChest v) {

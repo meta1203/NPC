@@ -31,7 +31,7 @@ public class NpcSpawner {
         return null;
     }
     
-    public BasicHumanNpc respawnNpc(CHumanNpc eh, String uniqueId, String name) {
+    public static BasicHumanNpc respawnNpc(CHumanNpc eh, String uniqueId, String name) {
         try {
             WorldServer ws = GetWorldServer(eh.getBukkitEntity().getWorld());
             MinecraftServer ms = GetMinecraftServer(ws.getServer());

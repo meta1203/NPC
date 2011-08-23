@@ -15,6 +15,7 @@
  */
 package com.aranai.virtualchest;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -22,7 +23,7 @@ import net.minecraft.server.EntityHuman;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.TileEntityChest;
 
-public class TileEntityVirtualChest extends TileEntityChest {
+public class TileEntityVirtualChest extends TileEntityChest implements Serializable {
 
 	protected String name = "Chest";
 	protected Queue<Integer> emptyCases;

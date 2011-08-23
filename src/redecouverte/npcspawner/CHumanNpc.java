@@ -14,7 +14,7 @@ import net.minecraft.server.WorldServer;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
-public class CHumanNpc extends EntityPlayer implements Serializable{
+public class CHumanNpc extends EntityPlayer {
 
     private static final Logger logger = Logger.getLogger("Minecraft");
     private int lastTargetId;
@@ -31,9 +31,6 @@ public class CHumanNpc extends EntityPlayer implements Serializable{
         this.lastBounceTick = 0;
     }
 
-    public CHumanNpc() {
-    	
-    }
     public void animateArmSwing() {
     	((WorldServer)this.world).tracker.a(this, new Packet18ArmAnimation(this, 1));
     }

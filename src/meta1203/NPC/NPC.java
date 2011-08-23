@@ -124,12 +124,7 @@ public class NPC extends JavaPlugin {
     	}
     	
     	if (fm.filesInDataFolder() != null) {
-    		BasicHumanNpcList temp = (BasicHumanNpcList)fm.readFromFile("plugins/NPC/data/npcData.dat");
-    		if (temp != null) {
-    			HumanNPCList = temp;
-    			respawnAllNpcs(HumanNPCList);
-    		}
-    		
+    		fm.reinstateNpc();
     	}
     	
         // Register our events
@@ -173,10 +168,10 @@ public class NPC extends JavaPlugin {
     }
     public void onDisable() {
         // TODO: Place any custom disable code here
-    	fm.writeToFile(HumanNPCList, "plugins/NPC/data/npcData.dat");
+    	fm.writeToReinstate();
     	for (BasicHumanNpc current : HumanNPCList.values()) {
-			NpcSpawner.RemoveBasicHumanNpc(current);
-		}
+    		npcs.RemoveBasicHumanNpc(current);
+    	}
         // NOTE: All registered events are automatically unregistered when a plugin is disabled
 
         // EXAMPLE: Custom code, here we just output some info so we can check all is well
@@ -208,13 +203,7 @@ public class NPC extends JavaPlugin {
         return hnpc;
     }
     
-    public void respawnAllNpcs(BasicHumanNpcList hnpcl) {
-    	for (Map.Entry<String,BasicHumanNpc> current : hnpcl.entrySet()) {
-    		BasicHumanNpc hnpc = npcs.respawnNpc(current.getValue().getCHumanNpc(), current.getKey(), current.getValue().getName());
-    		VirtualChest vc = new VirtualChest(current.getKey());
-            npci.put(hnpc, vc);
-    	}
-    }
+
     
 }
 
